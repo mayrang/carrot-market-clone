@@ -1,33 +1,35 @@
+/* reset css 같이 기본 스타일 정의 */
 @tailwind base;
+/* 하나의 css의 그룹 또는 조합해서 하나의 추상화된 컴포넌트 클래스를 만들때 사용? */
 @tailwind components;
+/* 내가 만든 className들이 컴파일러 돼서 여기 담김 */
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
+/* Functions & Directives
+지시어(Directives)는 Tailwind CSS 프로젝트에 특별한 기능을 제공하는 CSS에서 사용할 수 있는 사용자 정의 Tailwind 관련 at-규칙입니다.
+https://tailwindcss.com/docs/functions-and-directives
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+@tailwind
+@tailwind 지시문을 사용하여 Tailwind의 base, components, utilities 및 variants 스타일을 CSS에 삽입할 수 있다.
+https://tailwindcss.com/docs/functions-and-directives#tailwind
+
+@apply
+기존 유틸리티 클래스를 사용자 커스텀 CSS에 인라인하려면 @apply를 사용하세요.
+https://tailwindcss.com/docs/functions-and-directives#apply
+
+@layer
+@layer 지시문을 사용하여 사용자 정의 스타일 세트가 속한 '버킷'을 Tailwind에 알립니다.
+https://tailwindcss.com/docs/functions-and-directives#layer
+ */
+
+@layer base {
+  a {
+    @apply text-orange-500;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@layer components {
+  .primary-btn {
+    @apply w-full bg-orange-500 text-white rounded-md text-center font-medium hover:bg-orange-400 transition-colors;
   }
 }
