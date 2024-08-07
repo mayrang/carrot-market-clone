@@ -15,7 +15,7 @@ export default function SMSLogin() {
         <FormInput required placeholder="Phone number" errors={[]} type="number" />
         <FormInput required placeholder="Verify" errors={[]} type="number" />
 
-        <FormBtn text="Verify" loading={false} />
+        <FormBtn text="Verify" />
       </form>
     </div>
   );
