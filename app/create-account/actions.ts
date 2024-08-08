@@ -6,6 +6,9 @@ const usernameCheck = (username: string) => username !== "May";
 const confirmPasswordCheck = ({ password, confirmPassword }: { password: string; confirmPassword: string }) =>
   password === confirmPassword;
 
+//
+const passwordRegex = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).+$/);
+
 const formSchema = z
   .object({
     username: z
@@ -15,9 +18,17 @@ const formSchema = z
       })
       .min(3, "Username은 3글자 이상이여야 합니다.")
       .max(15, "Username은 3글자 이하이여야 합니다.")
+      .trim()
+      .transform((username) => `🥕${username}`)
       .refine(usernameCheck, "May는 사용할 수 없습니다."),
-    email: z.string().email("이메일 형식이여야 합니다."),
-    password: z.string().min(10, "비밀번호는 10글자 이상이여야 합니다."),
+    email: z.string().email("이메일 형식이여야 합니다.").toLowerCase(),
+    password: z
+      .string()
+      .min(10, "비밀번호는 10글자 이상이여야 합니다.")
+      .regex(
+        passwordRegex,
+        "At least one uppercase letter, one lowercase letter, one number and one special character"
+      ),
     confirmPassword: z.string().min(10, "비밀번호 확인은 10글자 이상이여야 합니다."),
   })
   .refine(confirmPasswordCheck, { message: "비밀번호가 똑같지 않습니다.", path: ["confirmPassword"] });
@@ -32,5 +43,7 @@ export const handleForm = async (prevState: any, formData: FormData) => {
   const result = formSchema.safeParse(data);
   if (!result.success) {
     return result.error.flatten();
+  } else {
+    console.log(result.data);
   }
 };
