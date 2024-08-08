@@ -1,5 +1,5 @@
-import FormBtn from "@/components/form-btn";
-import FormInput from "@/components/form-input";
+import FormBtn from "@/components/Button";
+import FormInput from "@/components/Input";
 import SocialLogin from "@/components/social-login";
 
 import React from "react";

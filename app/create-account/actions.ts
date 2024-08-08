@@ -7,7 +7,7 @@ const confirmPasswordCheck = ({ password, confirmPassword }: { password: string;
   password === confirmPassword;
 
 //
-const passwordRegex = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).+$/);
+export const passwordRegex = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).+$/);
 
 const formSchema = z
   .object({
