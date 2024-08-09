@@ -1,13 +1,11 @@
 "use server";
+import { PASSWORD_MIN_LENGTH, PASSWORD_REGEX } from "@/lib/constants";
 import { z } from "zod";
 
 const usernameCheck = (username: string) => username !== "May";
 
 const confirmPasswordCheck = ({ password, confirmPassword }: { password: string; confirmPassword: string }) =>
   password === confirmPassword;
-
-//
-export const passwordRegex = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).+$/);
 
 const formSchema = z
   .object({
@@ -24,16 +22,18 @@ const formSchema = z
     email: z.string().email("이메일 형식이여야 합니다.").toLowerCase(),
     password: z
       .string()
-      .min(10, "비밀번호는 10글자 이상이여야 합니다.")
+      .min(PASSWORD_MIN_LENGTH, `비밀번호는 ${PASSWORD_MIN_LENGTH}글자 이상이여야 합니다.`)
       .regex(
-        passwordRegex,
+        PASSWORD_REGEX,
         "At least one uppercase letter, one lowercase letter, one number and one special character"
       ),
-    confirmPassword: z.string().min(10, "비밀번호 확인은 10글자 이상이여야 합니다."),
+    confirmPassword: z
+      .string()
+      .min(PASSWORD_MIN_LENGTH, `비밀번호 확인은 ${PASSWORD_MIN_LENGTH}글자 이상이여야 합니다.`),
   })
   .refine(confirmPasswordCheck, { message: "비밀번호가 똑같지 않습니다.", path: ["confirmPassword"] });
 
-export const handleForm = async (prevState: any, formData: FormData) => {
+export const createAccount = async (prevState: any, formData: FormData) => {
   const data = {
     username: formData.get("username"),
     email: formData.get("email"),

@@ -5,11 +5,11 @@ import SocialLogin from "@/components/social-login";
 
 import React from "react";
 import { useFormState } from "react-dom";
-import { handleForm, passwordRegex } from "./actions";
+import { createAccount } from "./actions";
 import Button from "@/components/Button";
 
 export default function CreateAccount() {
-  const [state, action] = useFormState(handleForm, null);
+  const [state, action] = useFormState(createAccount, null);
   return (
     <div className="flex flex-col gap-10 py-8 px-6">
       <div className="flex flex-col gap-2 *:font-medium">

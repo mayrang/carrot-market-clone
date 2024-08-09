@@ -4,7 +4,7 @@ import Input from "@/components/Input";
 import SocialLogin from "@/components/social-login";
 
 import React, { useActionState } from "react";
-import { handleForm } from "./actions";
+import { login } from "./actions";
 import { useFormState } from "react-dom";
 
 /* 
@@ -24,7 +24,7 @@ useFormState에 전달한 함수는 첫 번째 인수로 이전 혹은 초기 st
 // 이거 지금 useActionState는 리액트 19버전에서만 되고 18버전에서는 안되는 이슈가 있나봄 이상하네 얘네
 
 export default function Login() {
-  const [state, action] = useFormState(handleForm, null);
+  const [state, action] = useFormState(login, null);
   return (
     <div className="flex flex-col gap-10 py-8 px-6">
       <div className="flex flex-col gap-2 *:font-medium">
@@ -32,8 +32,14 @@ export default function Login() {
         <h2 className="text-xl">Log in with email and password</h2>
       </div>
       <form action={action} className="flex flex-col gap-3">
-        <Input name={"email"} required placeholder="Email" errors={[]} type="email" />
-        <Input name="password" required placeholder="Password" errors={state?.errors ?? []} type="password" />
+        <Input name={"email"} required placeholder="Email" errors={state?.fieldErrors.email} type="email" />
+        <Input
+          name="password"
+          required
+          placeholder="Password"
+          errors={state?.fieldErrors.password ?? []}
+          type="password"
+        />
 
         <Button text="Log in" />
       </form>
