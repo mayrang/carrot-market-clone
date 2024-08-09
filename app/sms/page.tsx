@@ -15,8 +15,8 @@ export default function SMSLogin() {
         <h2 className="text-xl">Verify your phone number</h2>
       </div>
       <form action={action} className="flex flex-col gap-3">
-        <Input required placeholder="Phone number" name="phoneNumber" type="number" />
-        <Input required placeholder="Verify" name="verifyCode" type="number" />
+        <Input required placeholder="Phone number" name="phoneNumber" type="text" />
+        <Input required placeholder="Verify" name="token" type="number" min={100000} max={999999} />
 
         <Button text="Verify" />
       </form>
