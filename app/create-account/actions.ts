@@ -2,7 +2,10 @@
 import { PASSWORD_MIN_LENGTH, PASSWORD_REGEX } from "@/lib/constants";
 import db from "@/lib/db";
 import { z } from "zod";
-
+import bcrypt from "bcrypt";
+import { getIronSession } from "iron-session";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 const usernameCheck = (username: string) => username !== "May";
 
 const confirmPasswordCheck = ({ password, confirmPassword }: { password: string; confirmPassword: string }) =>
@@ -75,6 +78,25 @@ export const createAccount = async (prevState: any, formData: FormData) => {
   if (!result.success) {
     return result.error.flatten();
   } else {
-    console.log(result.data);
+    const hashedPassword = await bcrypt.hash(result.data.password, 12);
+
+    const user = await db.user.create({
+      data: {
+        username: result.data.username,
+        email: result.data.email,
+        password: hashedPassword,
+      },
+      select: {
+        id: true,
+      },
+    });
+    const cookie = await getIronSession(cookies(), {
+      cookieName: "delicious-carrot",
+      password: process.env.COOKIE_PASSWORD!,
+    });
+    //@ts-ignore
+    cookie.id = user.id;
+    await cookie.save();
+    redirect("/profile");
   }
 };
