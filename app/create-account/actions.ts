@@ -17,29 +17,29 @@ const confirmPasswordCheck = ({
   confirmPassword: string;
 }) => password === confirmPassword;
 
-const checkUniqueUsername = async (username: string) => {
-  const user = await db.user.findUnique({
-    where: {
-      username,
-    },
-    select: {
-      id: true,
-    },
-  });
-  return !Boolean(user);
-};
+// const checkUniqueUsername = async (username: string) => {
+//   const user = await db.user.findUnique({
+//     where: {
+//       username,
+//     },
+//     select: {
+//       id: true,
+//     },
+//   });
+//   return !Boolean(user);
+// };
 
-const checkUniqueEmail = async (email: string) => {
-  const user = await db.user.findUnique({
-    where: {
-      email,
-    },
-    select: {
-      id: true,
-    },
-  });
-  return !Boolean(user);
-};
+// const checkUniqueEmail = async (email: string) => {
+//   const user = await db.user.findUnique({
+//     where: {
+//       email,
+//     },
+//     select: {
+//       id: true,
+//     },
+//   });
+//   return !Boolean(user);
+// };
 
 const formSchema = z
   .object({
@@ -52,14 +52,8 @@ const formSchema = z
       .max(15, "Username은 3글자 이하이여야 합니다.")
       .trim()
       .transform((username) => `🥕${username}`)
-      .refine(usernameCheck, "May는 사용할 수 없습니다.")
-      .refine(checkUniqueUsername, "유저 이름이 이미 사용중입니다."),
-
-    email: z
-      .string()
-      .email("이메일 형식이여야 합니다.")
-      .toLowerCase()
-      .refine(checkUniqueEmail, "이메일이 이미 사용중입니다."),
+      .refine(usernameCheck, "May는 사용할 수 없습니다."),
+    email: z.string().email("이메일 형식이여야 합니다.").toLowerCase(),
     password: z
       .string()
       .min(
@@ -76,6 +70,44 @@ const formSchema = z
         PASSWORD_MIN_LENGTH,
         `비밀번호 확인은 ${PASSWORD_MIN_LENGTH}글자 이상이여야 합니다.`
       ),
+  })
+  .superRefine(async ({ username }, ctx) => {
+    const user = await db.user.findUnique({
+      where: {
+        username,
+      },
+      select: {
+        id: true,
+      },
+    });
+    if (user) {
+      ctx.addIssue({
+        path: ["username"],
+        code: "custom",
+        message: "이미 존재하는 유저이름입니다.",
+        fatal: true,
+      });
+      return z.NEVER;
+    }
+  })
+  .superRefine(async ({ email }, ctx) => {
+    const user = await db.user.findUnique({
+      where: {
+        email,
+      },
+      select: {
+        id: true,
+      },
+    });
+    if (user) {
+      ctx.addIssue({
+        path: ["email"],
+        code: "custom",
+        message: "이미 존재하는 이메일입니다.",
+        fatal: true,
+      });
+      return z.NEVER;
+    }
   })
   .refine(confirmPasswordCheck, {
     message: "비밀번호가 똑같지 않습니다.",
