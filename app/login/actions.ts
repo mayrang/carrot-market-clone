@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { PASSWORD_MIN_LENGTH, PASSWORD_REGEX } from "@/lib/constants";
 import db from "@/lib/db";
 import { z } from "zod";
-import { getSession } from "@/components/sessions";
+import { getSession } from "@/lib/sessions";
 import { redirect } from "next/navigation";
 
 const checkUserEmail = async (email: string) => {
@@ -57,6 +57,7 @@ export const login = async (prevState: any, formData: FormData) => {
     if (ok) {
       const session = await getSession();
       session.id = user!.id;
+      await session.save();
       redirect("/profile");
     } else {
       return {

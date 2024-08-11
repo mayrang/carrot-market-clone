@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { getSession } from "@/components/sessions";
+import { getSession } from "@/lib/sessions";
 const usernameCheck = (username: string) => username !== "May";
 
 const confirmPasswordCheck = ({
