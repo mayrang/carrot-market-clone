@@ -6,10 +6,16 @@ import bcrypt from "bcrypt";
 import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getSession } from "@/components/sessions";
 const usernameCheck = (username: string) => username !== "May";
 
-const confirmPasswordCheck = ({ password, confirmPassword }: { password: string; confirmPassword: string }) =>
-  password === confirmPassword;
+const confirmPasswordCheck = ({
+  password,
+  confirmPassword,
+}: {
+  password: string;
+  confirmPassword: string;
+}) => password === confirmPassword;
 
 const checkUniqueUsername = async (username: string) => {
   const user = await db.user.findUnique({
@@ -56,16 +62,25 @@ const formSchema = z
       .refine(checkUniqueEmail, "이메일이 이미 사용중입니다."),
     password: z
       .string()
-      .min(PASSWORD_MIN_LENGTH, `비밀번호는 ${PASSWORD_MIN_LENGTH}글자 이상이여야 합니다.`)
+      .min(
+        PASSWORD_MIN_LENGTH,
+        `비밀번호는 ${PASSWORD_MIN_LENGTH}글자 이상이여야 합니다.`
+      )
       .regex(
         PASSWORD_REGEX,
         "At least one uppercase letter, one lowercase letter, one number and one special character"
       ),
     confirmPassword: z
       .string()
-      .min(PASSWORD_MIN_LENGTH, `비밀번호 확인은 ${PASSWORD_MIN_LENGTH}글자 이상이여야 합니다.`),
+      .min(
+        PASSWORD_MIN_LENGTH,
+        `비밀번호 확인은 ${PASSWORD_MIN_LENGTH}글자 이상이여야 합니다.`
+      ),
   })
-  .refine(confirmPasswordCheck, { message: "비밀번호가 똑같지 않습니다.", path: ["confirmPassword"] });
+  .refine(confirmPasswordCheck, {
+    message: "비밀번호가 똑같지 않습니다.",
+    path: ["confirmPassword"],
+  });
 
 export const createAccount = async (prevState: any, formData: FormData) => {
   const data = {
@@ -90,13 +105,10 @@ export const createAccount = async (prevState: any, formData: FormData) => {
         id: true,
       },
     });
-    const cookie = await getIronSession(cookies(), {
-      cookieName: "delicious-carrot",
-      password: process.env.COOKIE_PASSWORD!,
-    });
-    //@ts-ignore
-    cookie.id = user.id;
-    await cookie.save();
+    const session = await getSession();
+
+    session.id = user.id;
+    await session.save();
     redirect("/profile");
   }
 };
